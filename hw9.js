@@ -3,14 +3,22 @@ const listElement = document.getElementById("list");
 const nameInputElement = document.getElementById("name-input");
 const textAreaElement = document.getElementById("textarea-input");
 
-const likeButton = document.getElementById('like-counter');
-const likeCount = document.getElementById('like-count');
+let initEventlikes = () => {
 
-likeButton.addEventListener('click', () => {
-  const currentCount = parseInt(likeCount.textContent, 10);
-  likeCount.textContent = currentCount + 1;
-  return likeButton
-});
+  let likeButtons = Array.from(document.querySelectorAll('.like-button'));
+  let likeCounts = Array.from(document.querySelectorAll('.likes-counter'));
+
+  likeButtons.forEach((button, index) => {
+    button.addEventListener("click", () => {
+      button.classList.toggle('-active-like');
+      const current = Number(likeCounts[index].innerHTML);
+      const increase = button.classList.contains('-active-like') ? 1 : -1;
+      likeCounts[index].innerHTML = current + increase;
+    });
+  });
+}
+
+initEventlikes();
 
 let myDate = new Date();
 function formatDate(date) {
@@ -43,8 +51,8 @@ buttonElement.addEventListener("click", () => {
   } else if (textAreaElement.value === "" || textAreaElement.value === " ") {
     textAreaElement.classList.add("error");
     return
-  } 
-  
+  }
+
   const oldListHtml = listElement.innerHTML
   listElement.innerHTML = oldListHtml + `<li class="comment">
           <div class="comment-header">
@@ -58,10 +66,17 @@ buttonElement.addEventListener("click", () => {
           </div>
           <div class="comment-footer">
             <div class="likes">
-              <span id="like-count" class="likes-counter">0</span>
-              <button id="like-counter" class="like-button"></button>
+              <span  class="likes-counter">0</span>
+              <button class="like-button"></button>
             </div>
           </div>
         </li>`
+
+  initEventlikes();
+  nameInputElement.value = ""
+  textAreaElement.value = ""
 });
+
+
+
 
