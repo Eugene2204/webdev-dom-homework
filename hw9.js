@@ -2,6 +2,7 @@ const buttonElement = document.getElementById("write-button");
 const listElement = document.getElementById("list");
 const nameInputElement = document.getElementById("name-input");
 const textAreaElement = document.getElementById("textarea-input");
+const blockWithForms = document.querySelector(".add-form");
 
 let initEventlikes = () => {
 
@@ -17,6 +18,64 @@ let initEventlikes = () => {
     });
   });
 }
+
+document.querySelector('.container').addEventListener('click', function (event) {
+  let textItem = event.target.closest('.comment-text');
+
+  if (textItem) {
+    document.querySelector('.add-form-text').value = textItem.textContent;
+  }
+});
+
+const addComment = () => {
+
+  nameInputElement.classList.remove("error");
+  textAreaElement.classList.remove("error");
+
+  if (nameInputElement.value === "" || nameInputElement.value === " ") {
+    nameInputElement.classList.add("error");
+    return
+  } else if (textAreaElement.value === "" || textAreaElement.value === " ") {
+    textAreaElement.classList.add("error");
+    return
+  }
+
+  const saveInputName = nameInputElement.value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+  const saveInputText = textAreaElement.value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+
+  const oldListHtml = listElement.innerHTML
+  listElement.innerHTML = oldListHtml + `<li class="comment">
+          <div class="comment-header">
+            <div>${saveInputName}</div>
+            <div>${formatDate(myDate)}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">
+              ${saveInputText}
+            </div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span  class="likes-counter">0</span>
+              <button class="like-button"></button>
+            </div>
+          </div>
+        </li>`
+
+  initEventlikes();
+
+  nameInputElement.value = ""
+  textAreaElement.value = ""
+  buttonDisabled();
+};
 
 initEventlikes();
 
@@ -40,43 +99,27 @@ function formatDate(date) {
   return fullDate
 }
 
-buttonElement.addEventListener("click", () => {
-
-  nameInputElement.classList.remove("error");
-  textAreaElement.classList.remove("error");
-
-  if (nameInputElement.value === "" || nameInputElement.value === " ") {
-    nameInputElement.classList.add("error");
-    return
-  } else if (textAreaElement.value === "" || textAreaElement.value === " ") {
-    textAreaElement.classList.add("error");
-    return
+const buttonDisabled = () => {
+  if (nameInputElement.value === "" || textAreaElement.value === "") {
+    buttonElement.disabled = true;
+  } else {
+    buttonElement.disabled = false;
   }
+}
 
-  const oldListHtml = listElement.innerHTML
-  listElement.innerHTML = oldListHtml + `<li class="comment">
-          <div class="comment-header">
-            <div>${nameInputElement.value}</div>
-            <div>${formatDate(myDate)}</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              ${textAreaElement.value}
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span  class="likes-counter">0</span>
-              <button class="like-button"></button>
-            </div>
-          </div>
-        </li>`
+const pressEnter = (event) => {
+  if (event.code === "Enter") {
+    addComment();
+  }
+}
 
-  initEventlikes();
-  nameInputElement.value = ""
-  textAreaElement.value = ""
-});
+nameInputElement.addEventListener("input", buttonDisabled);
+textAreaElement.addEventListener("input", buttonDisabled);
 
+buttonElement.addEventListener("click", addComment);
+
+blockWithForms.addEventListener("keyup", pressEnter);
+buttonDisabled();
 
 
 
