@@ -3,13 +3,13 @@ const listElement = document.getElementById("list");
 const nameInputElement = document.getElementById("name-input");
 const textAreaElement = document.getElementById("textarea-input");
 const blockWithForms = document.querySelector(".add-form");
-let comments = document.querySelectorAll(".comments");
+let comments = document.querySelector('.comments');
 
 let initEventlikes = () => {
 
   let likeButtons = Array.from(document.querySelectorAll('.like-button'));
   let likeCounts = Array.from(document.querySelectorAll('.likes-counter'));
-  
+
   likeButtons.forEach((button, index) => {
     button.addEventListener("click", (e) => {
       e.stopPropagation()
@@ -25,61 +25,69 @@ const reply = () => {
 
   const commentList = document.querySelectorAll('.comment');
   commentList.forEach((comment, index) => {
-    comment.addEventListener('click', (event) => {
+    comment.addEventListener('click', () => {
       const index = comment.dataset.index;
       let textName = commentsArr[index].name;
       let textItem = commentsArr[index].comment;
-    
-          textAreaElement.value = textItem + ' ' + textName;
-  
+
+      textAreaElement.value = textItem + '\n' + textName + ' :';
+
     });
   })
 }
 
-let commentsArr = [
-  {
-    name: "Глеб Фокин",
-    comment: "Это будет первый комментарий на этой странице",
-    date: '12.02.22 12:18',
-    likes: 3,
-  },
-  {
-    name: "Варвара Н.",
-    comment: "Мне нравится как оформлена эта страница! ❤",
-    date: '13.02.22 19:22',
-    likes: 75,
-  },
-];
+let myDate = new Date();
+function formatDate(date) {
+
+  let day = date.getDate()
+  day = day < 10 ? `0` + day : day;
+  let month = date.getMonth(date.setMonth(9));
+  month = month < 10 ? `0` + month : month;
+  let year = date.getFullYear();
+  year = year < 10 ? year = `0` + year : year;
+  year = year.toString().slice(-2);
+  let hours = date.getHours();
+  hours = hours < 10 ? hours = `0` + hours : hours;
+  let minutes = date.getMinutes();
+  minutes = minutes < 10 ? minutes = `0` + minutes : minutes;
+
+  let fullDate = `${day}` + `:${month}` + `.${year}` + ` ${hours}` + `:${minutes}`;
+
+  return fullDate
+}
+
+let commentsArr = [];
 
 const getComments = () => {
 
-let fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/eugene-sokolov/comments", {
-  method: "GET",
-});
-
-fetchPromise.then((response) => {
-  response.json().then((responseData) => {
-   let appComments = responseData.comments.map((comment) => {
-      return {
-        name: comment.author.name,
-        comment: comment.text,
-        date: comment.date,
-        likes: comment.likes,
-      }
-    });
-    commentsArr = appComments;
-    console.log(commentsArr)
-    
-    renderList();
+  let fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/eugene-sokolov/comments", {
+    method: "GET",
   });
+
+  fetchPromise.then((response) => {
+    response.json().then((responseData) => {
+      let appComments = responseData.comments.map((comment) => {
+        return {
+          name: comment.author.name,
+          comment: comment.text,
+          date: new Date(comment.date).toLocaleString(),
+          likes: comment.likes,
+        }
+      });
+
+      commentsArr = appComments;
+      console.log(responseData);
+      
+      renderList();
+    });
   });
 }
 
 getComments();
 
 const renderList = () => {
- 
-const commentHtml = commentsArr.map((comment, index) => {
+
+  const commentHtml = commentsArr.map((comment, index) => {
     return `<li class="comment" data-index="${index}">
 <div class="comment-header">
   <div class="commentersName" data-index="${index}">${comment.name}</div>
@@ -98,17 +106,14 @@ const commentHtml = commentsArr.map((comment, index) => {
 </div>
 </li>`
   })
-  .join("")
+    .join("")
 
   listElement.innerHTML = commentHtml;
-  
+
   initEventlikes();
-reply();
+  reply();
+
 };
-
-
-  
-
 
 const addComment = () => {
 
@@ -122,30 +127,24 @@ const addComment = () => {
     textAreaElement.classList.add("error");
     return
   }
-  
+
   commentsArr.push({
     name: nameInputElement.value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;"),
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;"),
     comment: textAreaElement.value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;"),
-    date: formatDate(myDate),
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;"),
     likes: 0,
+    date: formatDate(myDate),
+    
   });
-  
-  initEventlikes();
-  
-  nameInputElement.value = ""
-  textAreaElement.value = ""
-  buttonDisabled();
-  renderList();
 
-  const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/eugene-sokolov/comments", {
+  let fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/eugene-sokolov/comments", {
     method: "POST",
     body: JSON.stringify({
       text: textAreaElement.value,
@@ -153,77 +152,34 @@ const addComment = () => {
     }),
 });
 
-fetchPromise.then((response) => {
+//getComments();
+
+/*fetchPromise.then((response) => {
   response.json().then((responseData) => {
-  let appComments = responseData.comments.map((comment) => {
+
+   let appComments = responseData.comments.map((comment) => {
       return {
         name: comment.author.name,
         comment: comment.text,
-        date: formatDate(myDate),
+        date: formatDate(),
         likes: comment.likes,
-        activeLike: false,
       }
     });
-    comments = responseData.comments;
-    comments = appComments;
-    
+
+    commentsArr = appComments;
     renderList();
+    
   });
-  });
+  });*/
+
+  initEventlikes();
+  
+  nameInputElement.value = ""
+  textAreaElement.value = ""
+  buttonDisabled();
   renderList();
-
-  /*const saveInputName = nameInputElement.value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-  const saveInputText = textAreaElement.value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-
-  const oldListHtml = listElement.innerHTML
-  listElement.innerHTML = oldListHtml + `<li class="comment">
-          <div class="comment-header">
-            <div class="commentersName">${saveInputName}</div>
-            <div>${formatDate(myDate)}</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              ${saveInputText}
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span  class="likes-counter">0</span>
-              <button class="like-button"></button>
-            </div>
-          </div>
-        </li>`*/
   
 };
-renderList();
-
-let myDate = new Date();
-function formatDate(date) {
-  
-  let day = date.getDate()
-  day = day < 10 ? `0` + day : day;
-  let month = date.getMonth(date.setMonth(9));
-  month = month < 10 ? `0` + month : month;
-  let year = date.getFullYear();
-  year = year < 10 ? year = `0` + year : year;
-  year = year.toString().slice(-2);
-  let hours = date.getHours();
-  hours = hours < 10 ? hours = `0` + hours : hours;
-  let minutes = date.getMinutes();
-  minutes = minutes < 10 ? minutes = `0` + minutes : minutes;
-
-  let fullDate = `${day}` + `:${month}` + `.${year}` + ` ${hours}` + `:${minutes}`;
-
-  return fullDate
-}
 
 const buttonDisabled = () => {
   if (nameInputElement.value === "" || textAreaElement.value === "") {
@@ -231,13 +187,13 @@ const buttonDisabled = () => {
   } else {
     buttonElement.disabled = false;
   }
-}
+};
 
 const pressEnter = (event) => {
   if (event.code === "Enter") {
     addComment();
   }
-}
+};
 
 nameInputElement.addEventListener("input", buttonDisabled);
 textAreaElement.addEventListener("input", buttonDisabled);
@@ -246,6 +202,4 @@ buttonElement.addEventListener("click", addComment);
 
 blockWithForms.addEventListener("keyup", pressEnter);
 buttonDisabled();
-
-
 
