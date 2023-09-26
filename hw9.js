@@ -154,11 +154,17 @@ const addComment = () => {
     body: JSON.stringify({
       text: textAreaElement.value,
       name: nameInputElement.value,
+      forceError: true,
     }),
   })
 
     .then((response) => {
-      return response.json();
+      console.log(response);
+      if (response.status === 201) {
+        return response.json();
+      } else {
+        throw new Error('Сервер упал');
+      }
     })
 
     .then(() => {
@@ -168,16 +174,18 @@ const addComment = () => {
     .then(() => {
       blockWithForms.classList.remove('hidden');
       formInput.textContent = "";
+      nameInputElement.value = "";
+      textAreaElement.value = "";
     })
 
     .catch((error) => {
+      blockWithForms.classList.remove('hidden');
+      formInput.textContent = "";
       alert('error');
+      console.warn(error);
     });
 
   initEventlikes();
-  nameInputElement.value = ""
-  textAreaElement.value = ""
-
   buttonDisabled();
 
 };
