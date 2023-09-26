@@ -3,12 +3,12 @@ const listElement = document.getElementById("list");
 const nameInputElement = document.getElementById("name-input");
 const textAreaElement = document.getElementById("textarea-input");
 const blockWithForms = document.querySelector(".add-form");
-let comments = document.querySelector('.comments');
+const formInput = document.querySelector(".input-form");
 
 let initEventlikes = () => {
 
-  let likeButtons = Array.from(document.querySelectorAll('.like-button'));
-  let likeCounts = Array.from(document.querySelectorAll('.likes-counter'));
+  const likeButtons = document.querySelectorAll('.like-button');
+  const likeCounts = document.querySelectorAll('.likes-counter');
 
   likeButtons.forEach((button, index) => {
     button.addEventListener("click", (e) => {
@@ -39,7 +39,7 @@ const reply = () => {
 let myDate = new Date();
 function formatDate(date) {
 
-  let day = date.getDate()
+  let day = date.getDate();
   day = day < 10 ? `0` + day : day;
   let month = date.getMonth(date.setMonth(9));
   month = month < 10 ? `0` + month : month;
@@ -51,21 +51,24 @@ function formatDate(date) {
   let minutes = date.getMinutes();
   minutes = minutes < 10 ? minutes = `0` + minutes : minutes;
 
-  let fullDate = `${day}` + `:${month}` + `.${year}` + ` ${hours}` + `:${minutes}`;
+  let fullDate = `${day}:${month}.${year} ${hours}:${minutes}`;
 
-  return fullDate
+  return fullDate;
 }
 
 let commentsArr = [];
-
+listElement.textContent = "Пожалуйста подождите,коммнтарии загружаются";
 const getComments = () => {
 
-  let fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/eugene-sokolov/comments", {
+  return fetch("https://wedev-api.sky.pro/api/v1/eugene-sokolov/comments", {
     method: "GET",
-  });
+  })
 
-  fetchPromise.then((response) => {
-    response.json().then((responseData) => {
+    .then((response) => {
+      return response.json();
+    })
+
+    .then((responseData) => {
       let appComments = responseData.comments.map((comment) => {
         return {
           name: comment.author.name,
@@ -73,17 +76,14 @@ const getComments = () => {
           date: new Date(comment.date).toLocaleString(),
           likes: comment.likes,
         }
-      });
+      })
 
       commentsArr = appComments;
-      console.log(responseData);
-      
-      renderList();
-    });
-  });
-}
 
-getComments();
+      renderList();
+    })
+
+}
 
 const renderList = () => {
 
@@ -106,7 +106,7 @@ const renderList = () => {
 </div>
 </li>`
   })
-    .join("")
+    .join("");
 
   listElement.innerHTML = commentHtml;
 
@@ -114,6 +114,8 @@ const renderList = () => {
   reply();
 
 };
+
+getComments();
 
 const addComment = () => {
 
@@ -141,44 +143,43 @@ const addComment = () => {
       .replaceAll('"', "&quot;"),
     likes: 0,
     date: formatDate(myDate),
-    
+
   });
 
-  let fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/eugene-sokolov/comments", {
+  blockWithForms.classList.add('hidden');
+  formInput.textContent = "Добавляем комментарий...";
+
+  fetch("https://wedev-api.sky.pro/api/v1/eugene-sokolov/comments", {
     method: "POST",
     body: JSON.stringify({
       text: textAreaElement.value,
       name: nameInputElement.value,
     }),
-});
+  })
 
-//getComments();
+    .then((response) => {
+      return response.json();
+    })
 
-/*fetchPromise.then((response) => {
-  response.json().then((responseData) => {
+    .then(() => {
+      return getComments();
+    })
 
-   let appComments = responseData.comments.map((comment) => {
-      return {
-        name: comment.author.name,
-        comment: comment.text,
-        date: formatDate(),
-        likes: comment.likes,
-      }
+    .then(() => {
+      blockWithForms.classList.remove('hidden');
+      formInput.textContent = "";
+    })
+
+    .catch((error) => {
+      alert('error');
     });
 
-    commentsArr = appComments;
-    renderList();
-    
-  });
-  });*/
-
   initEventlikes();
-  
   nameInputElement.value = ""
   textAreaElement.value = ""
+
   buttonDisabled();
-  renderList();
-  
+
 };
 
 const buttonDisabled = () => {
@@ -202,4 +203,5 @@ buttonElement.addEventListener("click", addComment);
 
 blockWithForms.addEventListener("keyup", pressEnter);
 buttonDisabled();
+
 

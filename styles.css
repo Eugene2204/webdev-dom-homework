@@ -141,3 +141,7 @@ body {
     background-color: mistyrose;
     border: 3px solid red;
   }
+
+  .hidden {
+    display:none;
+  }
