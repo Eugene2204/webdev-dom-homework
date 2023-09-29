@@ -1,3 +1,5 @@
+import { getCommentsApi, postComments } from "./api.js";
+
 const buttonElement = document.getElementById("write-button");
 const listElement = document.getElementById("list");
 const nameInputElement = document.getElementById("name-input");
@@ -56,19 +58,12 @@ function formatDate(date) {
   return fullDate;
 }
 
+
 let commentsArr = [];
 listElement.textContent = "Пожалуйста подождите,коммнтарии загружаются";
 const getComments = () => {
 
-  return fetch("https://wedev-api.sky.pro/api/v1/eugene-sokolov/comments", {
-    method: "GET",
-  })
-
-    .then((response) => {
-      return response.json();
-    })
-
-    .then((responseData) => {
+  getCommentsApi().then((responseData) => {
       let appComments = responseData.comments.map((comment) => {
         return {
           name: comment.author.name,
@@ -81,6 +76,7 @@ const getComments = () => {
       commentsArr = appComments;
 
       renderList();
+      
     })
 
 }
@@ -112,8 +108,9 @@ const renderList = () => {
 
   initEventlikes();
   reply();
-
 };
+
+
 
 getComments();
 
@@ -149,25 +146,10 @@ const addComment = () => {
   blockWithForms.classList.add('hidden');
   formInput.textContent = "Добавляем комментарий...";
 
-  fetch("https://wedev-api.sky.pro/api/v1/eugene-sokolov/comments", {
-    method: "POST",
-    body: JSON.stringify({
-      text: textAreaElement.value,
-      name: nameInputElement.value,
-      forceError: true,
-    }),
-  })
-
-    .then((response) => {
-      console.log(response);
-      if (response.status === 201) {
-        return response.json();
-      } else {
-        throw new Error('Сервер упал');
-      }
-    })
-
-    .then(() => {
+  postComments({
+    text: textAreaElement.value,
+    name: nameInputElement.value,
+  }).then(() => {
       return getComments();
     })
 
@@ -181,13 +163,12 @@ const addComment = () => {
     .catch((error) => {
       blockWithForms.classList.remove('hidden');
       formInput.textContent = "";
-      alert('error');
+      console.error('Нет соединения интернета',error);
       console.warn(error);
     });
 
   initEventlikes();
   buttonDisabled();
-
 };
 
 const buttonDisabled = () => {

@@ -145,3 +145,7 @@ body {
   .hidden {
     display:none;
   }
+
+  .input-form {
+    padding-top: 30px;
+  }
