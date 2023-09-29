@@ -29,5 +29,8 @@ export function postComments({ text, name }) {
             if (response.status === 201) {
                 return response.json();
             }
+            /*if (response.status === ) {
+                throw new Error("нет интернета");
+              }*/
         })
 }

@@ -1,131 +1,43 @@
-import { getCommentsApi, postComments } from "./api.js";
+import { getCommentsApi, postComments, } from "./api.js";
+import { renderList } from "./renderList.js";
+import { formatDate } from "./myDate.js";
+import { buttonDisabled, addCommentValidation } from "./validation.js";
 
-const buttonElement = document.getElementById("write-button");
-const listElement = document.getElementById("list");
-const nameInputElement = document.getElementById("name-input");
-const textAreaElement = document.getElementById("textarea-input");
+export const buttonElement = document.getElementById("write-button");
+export const listElement = document.getElementById("list");
+export const nameInputElement = document.getElementById("name-input");
+export const textAreaElement = document.getElementById("textarea-input");
 const blockWithForms = document.querySelector(".add-form");
 const formInput = document.querySelector(".input-form");
 
-let initEventlikes = () => {
-
-  const likeButtons = document.querySelectorAll('.like-button');
-  const likeCounts = document.querySelectorAll('.likes-counter');
-
-  likeButtons.forEach((button, index) => {
-    button.addEventListener("click", (e) => {
-      e.stopPropagation()
-      button.classList.toggle('-active-like');
-      const current = Number(likeCounts[index].innerHTML);
-      const increase = button.classList.contains('-active-like') ? 1 : -1;
-      likeCounts[index].innerHTML = current + increase;
-    });
-  });
-};
-
-const reply = () => {
-
-  const commentList = document.querySelectorAll('.comment');
-  commentList.forEach((comment, index) => {
-    comment.addEventListener('click', () => {
-      const index = comment.dataset.index;
-      let textName = commentsArr[index].name;
-      let textItem = commentsArr[index].comment;
-
-      textAreaElement.value = textItem + '\n' + textName + ' :';
-
-    });
-  })
-}
-
 let myDate = new Date();
-function formatDate(date) {
 
-  let day = date.getDate();
-  day = day < 10 ? `0` + day : day;
-  let month = date.getMonth(date.setMonth(9));
-  month = month < 10 ? `0` + month : month;
-  let year = date.getFullYear();
-  year = year < 10 ? year = `0` + year : year;
-  year = year.toString().slice(-2);
-  let hours = date.getHours();
-  hours = hours < 10 ? hours = `0` + hours : hours;
-  let minutes = date.getMinutes();
-  minutes = minutes < 10 ? minutes = `0` + minutes : minutes;
-
-  let fullDate = `${day}:${month}.${year} ${hours}:${minutes}`;
-
-  return fullDate;
-}
-
-
-let commentsArr = [];
+export let commentsArr = [];
 listElement.textContent = "Пожалуйста подождите,коммнтарии загружаются";
 const getComments = () => {
 
   getCommentsApi().then((responseData) => {
-      let appComments = responseData.comments.map((comment) => {
-        return {
-          name: comment.author.name,
-          comment: comment.text,
-          date: new Date(comment.date).toLocaleString(),
-          likes: comment.likes,
-        }
-      })
-
-      commentsArr = appComments;
-
-      renderList();
-      
+    let appComments = responseData.comments.map((comment) => {
+      return {
+        name: comment.author.name,
+        comment: comment.text,
+        date: new Date(comment.date).toLocaleString(),
+        likes: comment.likes,
+      }
     })
 
-}
+    commentsArr = appComments;
+    renderList({ commentsArr});
 
-const renderList = () => {
-
-  const commentHtml = commentsArr.map((comment, index) => {
-    return `<li class="comment" data-index="${index}">
-<div class="comment-header">
-  <div class="commentersName" data-index="${index}">${comment.name}</div>
-  <div>${comment.date}</div>
-</div>
-<div class="comment-body">
-  <div class="comment-text" data-index="${index}">
-    ${comment.comment}
-  </div>
-</div>
-<div class="comment-footer">
-  <div class="likes">
-    <span  class="likes-counter">${comment.likes}</span>
-    <button class="like-button"></button>
-  </div>
-</div>
-</li>`
   })
-    .join("");
 
-  listElement.innerHTML = commentHtml;
-
-  initEventlikes();
-  reply();
-};
-
-
+}
 
 getComments();
 
 const addComment = () => {
 
-  nameInputElement.classList.remove("error");
-  textAreaElement.classList.remove("error");
-
-  if (nameInputElement.value === "" || nameInputElement.value === " ") {
-    nameInputElement.classList.add("error");
-    return
-  } else if (textAreaElement.value === "" || textAreaElement.value === " ") {
-    textAreaElement.classList.add("error");
-    return
-  }
+  addCommentValidation();
 
   commentsArr.push({
     name: nameInputElement.value
@@ -150,8 +62,8 @@ const addComment = () => {
     text: textAreaElement.value,
     name: nameInputElement.value,
   }).then(() => {
-      return getComments();
-    })
+    return getComments();
+  })
 
     .then(() => {
       blockWithForms.classList.remove('hidden');
@@ -163,20 +75,11 @@ const addComment = () => {
     .catch((error) => {
       blockWithForms.classList.remove('hidden');
       formInput.textContent = "";
-      console.error('Нет соединения интернета',error);
+      console.error('error', error);
       console.warn(error);
     });
 
-  initEventlikes();
   buttonDisabled();
-};
-
-const buttonDisabled = () => {
-  if (nameInputElement.value === "" || textAreaElement.value === "") {
-    buttonElement.disabled = true;
-  } else {
-    buttonElement.disabled = false;
-  }
 };
 
 const pressEnter = (event) => {
@@ -189,7 +92,6 @@ nameInputElement.addEventListener("input", buttonDisabled);
 textAreaElement.addEventListener("input", buttonDisabled);
 
 buttonElement.addEventListener("click", addComment);
-
 blockWithForms.addEventListener("keyup", pressEnter);
 buttonDisabled();
 
