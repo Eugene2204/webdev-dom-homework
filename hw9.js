@@ -28,9 +28,7 @@ const getComments = () => {
 
     commentsArr = appComments;
     renderList({ commentsArr});
-
   })
-
 }
 
 getComments();
@@ -75,6 +73,9 @@ const addComment = () => {
     .catch((error) => {
       blockWithForms.classList.remove('hidden');
       formInput.textContent = "";
+      if (error.message === 'Failed to fetch') {
+        throw new Error("нет интернета")
+      }
       console.error('error', error);
       console.warn(error);
     });
