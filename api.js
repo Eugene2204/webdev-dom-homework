@@ -4,11 +4,15 @@ export function getCommentsApi() {
     })
 
         .then((response) => {
-            return response.json();
+                return response.json();
         })
+        .catch((error) => {
+            if (error.message === 'Failed to fetch') {
+              throw new Error("нет интернета");
+            }
+            console.warn(error);
+          });
 }
-
-
 
 export function postComments({ text, name }) {
     return fetch("https://wedev-api.sky.pro/api/v1/eugene-sokolov/comments", {
@@ -29,8 +33,13 @@ export function postComments({ text, name }) {
             if (response.status === 201) {
                 return response.json();
             }
-            /*if (response.status === ) {
-                throw new Error("нет интернета");
-              }*/
+
         })
+        .catch((error) => {
+            if (error.message === 'Failed to fetch') {
+              throw new Error("нет интернета");
+            }
+            console.warn(error);
+          });
+      
 }

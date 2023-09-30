@@ -6,10 +6,8 @@ export  const addCommentValidation = () => {
   
     if (nameInputElement.value === "" || nameInputElement.value === " ") {
       nameInputElement.classList.add("error");
-      return
     } else if (textAreaElement.value === "" || textAreaElement.value === " ") {
       textAreaElement.classList.add("error");
-      return
     }
  }
 

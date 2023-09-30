@@ -1,6 +1,5 @@
 import { commentsArr, textAreaElement } from "./hw9.js";
 
-
 export const reply = () => {
 
     const commentList = document.querySelectorAll('.comment');
