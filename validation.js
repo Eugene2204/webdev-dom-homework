@@ -10,13 +10,16 @@ export  const addCommentValidation = () => {
       textAreaElement.classList.add("error");
     }
  }
-
+ 
 export const buttonDisabled = () => {
-        if (nameInputElement.value === "" || textAreaElement.value === "") {
-          buttonElement.disabled = true;
-        } else {
-          buttonElement.disabled = false;
-        }
-      };
+  if (nameInputElement.value === "" || textAreaElement.value === "") {
+    buttonElement.disabled = true;
+  } else {
+    buttonElement.disabled = false;
+  }
+};
+
+
+
 
       
