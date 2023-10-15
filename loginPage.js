@@ -1,6 +1,6 @@
-import { login, setToken, token } from "./api.js"
+import { loginAvtorization, setToken } from "./api.js";
 import { commentsArr} from "./hw9.js";
-//import { renderForm } from "./renderList.js";
+import { renderRegistration } from "./registrationForm.js";
 
 export const renderLogin = ({renderList}) => {
     const appElement = document.getElementById("app");
@@ -15,24 +15,26 @@ export const renderLogin = ({renderList}) => {
             <a class="line_login-page" href="#">Зарегистрироваться</a>
         </div>`
         appElement.innerHTML = loginHtml;
-        
+
+        const buttonRegister = document.querySelector(".line_login-page");
+        buttonRegister.addEventListener('click', () => renderRegistration());
+
         const buttonElementLogin = document.getElementById('authorization-form');
         const loginInputElement = document.getElementById('login-name-input');
         const passwordInputElement = document.getElementById('password-input');
         
         buttonElementLogin.addEventListener("click", () => {
-            login({
+            loginAvtorization({
                 login: loginInputElement.value,
                 password: passwordInputElement.value
             })
                 .then((responseData) => {
                     setToken(responseData.user.token);
-                    console.log(token);
+                    window.localStorage.setItem("userName",responseData.user.login);
                 })
                 .then (() => {
                     renderList({commentsArr});
-                    
-                    
                 })
         });
+        
 }

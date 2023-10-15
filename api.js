@@ -1,5 +1,3 @@
-import { getComments, listElement } from "./hw9.js";
-
 const host = "https://wedev-api.sky.pro/api/v2/eugene-sokolov/comments";
 const userHost = "https://wedev-api.sky.pro/api/user/login";
 export let token;
@@ -7,9 +5,8 @@ export const setToken = (newToken) => {
     token = newToken;
 }
 
-
 export function getCommentsApi() {
-    
+
     return fetch(host, {
         method: "GET",
         headers: {
@@ -61,7 +58,7 @@ export function postComments({ text, name }) {
 
 }
 
-export function login({ login, password }) {
+export function loginAvtorization({ login, password }) {
     return fetch(userHost, {
         method: "POST",
         body: JSON.stringify({
@@ -69,7 +66,7 @@ export function login({ login, password }) {
             password,
         }),
     })
-
+    
         .then((response) => {
             if (response.status === 500) {
                 throw new Error('Сервер упал');

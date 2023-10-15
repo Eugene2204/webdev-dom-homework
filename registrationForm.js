@@ -1,9 +1,11 @@
-import { login, name, setToken, token } from "./api.js"
-import { commentsArr} from "./hw9.js";
+import { userRegistration, setToken } from "./api.js"
+import { commentsArr } from "./hw9.js";
+import { renderLogin } from "./loginPage.js";
+import { renderList } from "./renderList.js";
 
-export const renderRegistration = ({renderList}) => {
-    const registrationElement = document.getElementById("registration");
-    const loginHtml = `<div class="container">
+export const renderRegistration = () => {
+    const appElement = document.getElementById("app");
+    const loginHtmlRegistr = `<div class="container">
     <div class="add-form">
         <h1>Регистрация</h1>
         <input type="text" id="login-name-input-registration" class="add-form-text" placeholder="Введите ваше имя" />
@@ -15,26 +17,28 @@ export const renderRegistration = ({renderList}) => {
         </div>
         <a class="line_login-page" href="#">Войти</a>
     </div>`
-    registrationElement.innerHTML = loginHtml;
+    appElement.innerHTML = loginHtmlRegistr;
 
-        const buttonElementLogin = document.getElementById('authorization-form-registration');
-        const loginInputElement = document.getElementById('login-name-input-registration');
-        const loginElement = document.getElementById('login-input-registration')
-        const passwordInputElement = document.getElementById('password-input-registration');
+    const buttonRegister = document.querySelector(".line_login-page")
+    buttonRegister.addEventListener('click', () => renderLogin({ renderList }));
 
-        buttonElementLogin.addEventListener("click", () => {
-            login({
-                name: loginInputElement.value,
-                login: loginElement.value,
-                password: passwordInputElement.value
+    const buttonElementLogin = document.getElementById('authorization-form-registration');
+    const loginInputElement = document.getElementById('login-name-input-registration');
+    const loginElement = document.getElementById('login-input-registration')
+    const passwordInputElement = document.getElementById('password-input-registration');
+
+    buttonElementLogin.addEventListener("click", () => {
+        userRegistration({
+            name: loginInputElement.value,
+            login: loginElement.value,
+            password: passwordInputElement.value
+        })
+            .then((responseData) => {
+                setToken(responseData.user.token);
+                console.log(responseData);
             })
-                .then((responseData) => {
-                    console.log(token);
-                    setToken(responseData.user.token);
-                    console.log(token);
-                })
-                .then (() => {
-                    renderList({commentsArr });
-                })
-        });
+            .then(() => {
+                renderList({ commentsArr });
+            })
+    });
 }

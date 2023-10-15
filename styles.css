@@ -170,3 +170,21 @@ body {
   .input-form {
     padding-top: 30px;
   }
+
+  .avtorization {
+    padding-top: 20px;
+  }
+
+  .avtorization-text {
+    font-size: 25px;
+  }
+
+  .avtorization-button {
+    text-decoration: none;
+    color: #348fea;
+  }
+
+  .avtorization-button:hover {
+    text-decoration: underline;
+    color: #bcec30;
+  }

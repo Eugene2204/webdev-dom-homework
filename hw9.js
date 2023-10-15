@@ -1,22 +1,13 @@
 import { getCommentsApi, postComments, } from "./api.js";
 import { renderList } from "./renderList.js";
 import { formatDate } from "./myDate.js";
-import { addCommentValidation, buttonDisabled } from "./validation.js";
-import { renderLogin } from "./loginPage.js";
-
-export const buttonElement = document.getElementById("write-button");
-export const listElement = document.getElementById("list");
-export const nameInputElement = document.getElementById("name-input");
-export const textAreaElement = document.getElementById("textarea-input");
-export const blockWithForms = document.querySelector(".add-form");
-const formInput = document.querySelector(".input-form");
+import { addCommentValidation } from "./validation.js";
 
 let myDate = new Date();
 
 export let commentsArr = [];
 
 export const getComments = () => {
-  listElement.textContent = "Пожалуйста подождите,коммнтарии загружаются";
   getCommentsApi().then((responseData) => {
     let appComments = responseData.comments.map((comment) => {
       return {
@@ -26,19 +17,21 @@ export const getComments = () => {
         likes: comment.likes,
       }
     })
-    
+
     commentsArr = appComments;
     renderList({commentsArr});
   })
 }
 getComments();
 
-renderLogin({renderList});
-
 export const addComment = () => {
-  
+  const nameInputElement = document.getElementById("name-input");
+  const textAreaElement = document.getElementById("textarea-input");
+  const blockWithForms = document.querySelector(".add-form");
+  const formInput = document.querySelector(".input-form");
+
   addCommentValidation();
-  
+
   commentsArr.push({
     name: nameInputElement.value
       .replaceAll("&", "&amp;")
@@ -52,11 +45,9 @@ export const addComment = () => {
       .replaceAll('"', "&quot;"),
     likes: 0,
     date: formatDate(myDate),
-    
+
   });
 
-  
-  
   blockWithForms.classList.add('hidden');
   formInput.textContent = "Добавляем комментарий...";
 
@@ -80,18 +71,9 @@ export const addComment = () => {
       console.warn(error);
     });
   };
-  
-  
-    const pressEnter = (event) => {
-      if (event.code === "Enter") {
-        addComment();
-      }
-    };
-    
-    nameInputElement.addEventListener("input", buttonDisabled);
-    textAreaElement.addEventListener("input", buttonDisabled);
-    
-    buttonElement.addEventListener("click", addComment);
-    blockWithForms.addEventListener("keyup", pressEnter);
-    
-//buttonDisabled();*/
+
+export const pressEnter = (event) => {
+  if (event.code === "Enter") {
+    addComment();
+  }
+};
