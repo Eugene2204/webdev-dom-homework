@@ -1,11 +1,11 @@
 import { initEventlikes } from "./likeFunction.js";
 import { reply } from "./replyToComments.js";
-import {  buttonDisabled } from "./validation.js";
+import { buttonDisabled } from "./validation.js";
 import { addComment, pressEnter } from "./hw9.js";
-import {renderLogin} from "./loginPage.js";
-import {token} from "./api.js";
+import { renderLogin } from "./loginPage.js";
+import { token } from "./api.js";
 
-export const renderList = ({commentsArr}) => {
+export const renderList = ({ commentsArr }) => {
 
   const commentsHTML = commentsArr.map((comment, index) => {
     return `<li class="comment" data-index="${index}">
@@ -57,18 +57,20 @@ export const renderList = ({commentsArr}) => {
   const blockWithForms = document.querySelector(".add-form");
   const buttonLogin = document.querySelector(".avtorization-button");
   const blockAuthorization = document.querySelector(".avtorization");
-  
+
   token ? blockAuthorization.classList.add('hidden') : blockWithForms.classList.add('hidden');
   nameInputElement.value = window.localStorage.getItem("userName");
   nameInputElement.disabled = true;
-  
-  buttonLogin.addEventListener('click', () => renderLogin({renderList}));
+
+  buttonLogin.addEventListener('click', () => renderLogin({ renderList }));
   nameInputElement.addEventListener("input", buttonDisabled);
   textAreaElement.addEventListener("input", buttonDisabled);
   buttonElement.addEventListener("click", addComment);
   blockWithForms.addEventListener("keyup", pressEnter);
-  
-  initEventlikes();
+
+  const likesBlock = document.querySelector(".likes")
+  token ? initEventlikes() : likesBlock;
+
   reply();
   buttonDisabled();
 };

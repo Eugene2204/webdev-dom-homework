@@ -1,5 +1,6 @@
 const host = "https://wedev-api.sky.pro/api/v2/eugene-sokolov/comments";
 const userHost = "https://wedev-api.sky.pro/api/user/login";
+const userHostReg =  "https://wedev-api.sky.pro/api/user";
 export let token;
 export const setToken = (newToken) => {
     token = newToken;
@@ -89,7 +90,7 @@ export function loginAvtorization({ login, password }) {
 }
 
 export function userRegistration({ login, name, password }) {
-    return fetch(userHost, {
+    return fetch(userHostReg, {
         method: "POST",
         body: JSON.stringify({
             name,

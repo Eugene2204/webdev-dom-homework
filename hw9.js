@@ -1,9 +1,10 @@
 import { getCommentsApi, postComments, } from "./api.js";
 import { renderList } from "./renderList.js";
-import { formatDate } from "./myDate.js";
+import { formatDateToRu, formatDateToUs } from "./lib/formatDate/formatDate.js";
 import { addCommentValidation } from "./validation.js";
+//import { format } from "date-fns";
 
-let myDate = new Date();
+let myDate = new Date({formatDateToRu});
 
 export let commentsArr = [];
 
@@ -44,7 +45,7 @@ export const addComment = () => {
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;"),
     likes: 0,
-    date: formatDate(myDate),
+    date: formatDateToRu(myDate),
 
   });
 
