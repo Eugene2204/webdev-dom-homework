@@ -1,10 +1,7 @@
 import { getCommentsApi, postComments, } from "./api.js";
 import { renderList } from "./renderList.js";
-import { formatDateToRu, formatDateToUs } from "./lib/formatDate/formatDate.js";
 import { addCommentValidation } from "./validation.js";
-//import { format } from "date-fns";
-
-let myDate = new Date({formatDateToRu});
+import { format } from "date-fns";
 
 export let commentsArr = [];
 
@@ -14,7 +11,7 @@ export const getComments = () => {
       return {
         name: comment.author.name,
         comment: comment.text,
-        date: new Date(comment.date).toLocaleString(),
+        date: format((new Date(comment.date)), 'yyyy-MM-dd hh.mm.ss'),
         likes: comment.likes,
       }
     })
@@ -32,7 +29,7 @@ export const addComment = () => {
   const formInput = document.querySelector(".input-form");
 
   addCommentValidation();
-
+  
   commentsArr.push({
     name: nameInputElement.value
       .replaceAll("&", "&amp;")
@@ -45,10 +42,8 @@ export const addComment = () => {
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;"),
     likes: 0,
-    date: formatDateToRu(myDate),
-
   });
-
+  
   blockWithForms.classList.add('hidden');
   formInput.textContent = "Добавляем комментарий...";
 
