@@ -37,8 +37,12 @@ export const renderRegistration = () => {
                 setToken(responseData.user.token);
                 window.localStorage.setItem("userName",responseData.user.name);
             })
+            
             .then(() => {
                 renderList({ commentsArr });
-            })
+            })  
+            .catch((error) => {
+                console.warn(error);
+              });  
     });
 }

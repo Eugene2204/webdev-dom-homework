@@ -48,7 +48,6 @@ export function postComments({ text, name }) {
             if (response.status === 201) {
                 return response.json();
             }
-
         })
         .catch((error) => {
             if (error.message === 'Failed to fetch') {
@@ -78,15 +77,7 @@ export function loginAvtorization({ login, password }) {
             if (response.status === 201) {
                 return response.json();
             }
-
-        })
-        .catch((error) => {
-            if (error.message === 'Failed to fetch') {
-                throw new Error("нет интернета");
-            }
-            console.warn(error);
         });
-
 }
 
 export function userRegistration({ login, name, password }) {
@@ -98,24 +89,16 @@ export function userRegistration({ login, name, password }) {
             password,
         }),
     })
+    .then((response) => {
+        if (response.status === 500) {
+            throw new Error('Сервер упал');
+        }
+        if (response.status === 400) {
+            throw new Error('Неверные данные ввода');
+        }
+        if (response.status === 201) {
+            return response.json();
+        }
 
-        .then((response) => {
-            if (response.status === 500) {
-                throw new Error('Сервер упал');
-            }
-            if (response.status === 400) {
-                throw new Error('Неверные данные ввода');
-            }
-            if (response.status === 201) {
-                return response.json();
-            }
-
-        })
-        .catch((error) => {
-            if (error.message === 'Failed to fetch') {
-                throw new Error("нет интернета");
-            }
-            console.warn(error);
-        });
-
+    })
 }

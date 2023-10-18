@@ -35,6 +35,8 @@ export const renderLogin = ({renderList}) => {
                 .then (() => {
                     renderList({commentsArr});
                 })
-        });
-        
+                .catch((error) => {
+                    console.warn(error);
+                })
+        }); 
 }
